@@ -1,4 +1,4 @@
-<h1 style="text-align: center">admin 后台管理系统</h1>
+<h1 style="text-align: center">智翁 后台管理系统</h1>
 
 
 #### 项目简介
