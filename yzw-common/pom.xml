@@ -11,7 +11,7 @@
     <properties>
         <hutool.version>5.3.4</hutool.version>
     </properties>
-
+    <version>1.0</version>
     <artifactId>yzw-common</artifactId>
     <name>公共模块</name>
 
