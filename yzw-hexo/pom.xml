@@ -40,9 +40,9 @@
             <version>2.3.9</version>
         </dependency>
         <dependency>
-            <groupId>me.zhengjie</groupId>
-            <artifactId>eladmin-common</artifactId>
-            <version>2.6</version>
+            <groupId>com.yzw</groupId>
+            <artifactId>yzw-common</artifactId>
+            <version>1.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
