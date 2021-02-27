@@ -217,7 +217,6 @@
     </dependencies>
 
     <build>
-        <defaultGoal>compile</defaultGoal>
         <plugins>
             <!-- 打包时跳过测试 -->
             <plugin>
@@ -228,6 +227,8 @@
                 </configuration>
             </plugin>
         </plugins>
+
+
     </build>
 
     <repositories>
