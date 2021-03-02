@@ -178,9 +178,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         try {
             String path = new ClassPathResource("").getFile().getAbsolutePath();
             if (osName.toLowerCase().contains("windows")) {
-                strcmd = "cmd /c start " + path + "\\script\\开启你的博客之旅.bat d";
+                strcmd = "cmd /c start " + path + "\\script\\creatFile.bat d";
             } else if (osName.toLowerCase().contains("linux")) {
-                System.out.println("暂时没有");
+                strcmd = path + "\\script\\creatFile.sh";
             }
             result = runCmd(strcmd);
             if (result == 0) {

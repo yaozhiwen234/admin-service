@@ -111,12 +111,15 @@ file:
   mac:
     path: ~/file/
     avatar: ~/avatar/
+    filePath: ~/file/
   linux:
     path: /home/eladmin/file/
     avatar: /home/eladmin/avatar/
+    filePath: /user/hexo/source/_posts/
   windows:
     path: C:\eladmin\file\
     avatar: C:\eladmin\avatar\
+    filePath: D:\hexo\source\_posts
   # 文件大小 /M
   maxSize: 100
   avatarMaxSize: 5

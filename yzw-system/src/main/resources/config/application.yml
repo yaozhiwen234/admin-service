@@ -57,7 +57,5 @@ rsa:
 mybatis-plus:
   mapper-locations: classpath:dao/*.xml
 
-
-filePath: D:\hexo\source\_posts
-
+ #生成文件前缀
 suffix: .md

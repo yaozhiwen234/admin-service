@@ -1,5 +1,6 @@
 package com.yzw.controller;
 
+import com.yzw.config.FileProperties;
 import com.yzw.entity.Article;
 import com.yzw.model.DTO.ArticleFooter;
 import com.yzw.model.DTO.ArticleHead;
@@ -38,9 +39,8 @@ public class ArticleController {
 
     private final static String CTRLS = "ctrls";  //ctrl + s 的操作动作
     private final static String ADD = "add";  //增加 的操作动作
+    private final FileProperties properties;
 
-    @Value("${filePath}")
-    private String filePath;
 
     @Value("${suffix}")
     private String suffix;
@@ -117,7 +117,7 @@ public class ArticleController {
     @ApiOperation("同步数据")
     @PostMapping("/synArticle")
     public JsonResult synArticle(@RequestParam("id") Integer id) {
-        if (iArticleService.synArticle(id, filePath, suffix)) {
+        if (iArticleService.synArticle(id, properties.getPath().getFilePath(), suffix)) {
             return JsonResult.success("同步成功");
         }
         return JsonResult.error("同步失败");
