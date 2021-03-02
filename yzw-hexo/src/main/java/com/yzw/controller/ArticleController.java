@@ -36,10 +36,10 @@ public class ArticleController {
 
     private final IArticleService iArticleService;
 
+    private final FileProperties properties;
 
     private final static String CTRLS = "ctrls";  //ctrl + s 的操作动作
     private final static String ADD = "add";  //增加 的操作动作
-    private final FileProperties properties;
 
 
     @Value("${suffix}")
@@ -118,6 +118,7 @@ public class ArticleController {
     @PostMapping("/synArticle")
     public JsonResult synArticle(@RequestParam("id") Integer id) {
         if (iArticleService.synArticle(id, properties.getPath().getFilePath(), suffix)) {
+            System.out.println(properties.getPath().getFilePath());
             return JsonResult.success("同步成功");
         }
         return JsonResult.error("同步失败");

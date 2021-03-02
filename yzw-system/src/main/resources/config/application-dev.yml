@@ -106,7 +106,7 @@ file:
   linux:
     path: /home/eladmin/file/
     avatar: /home/eladmin/avatar/
-    filePath: /user/hexo/source/_posts/
+    filePath: /user/hexo/source/_posts
   windows:
     path: C:\eladmin\file\
     avatar: C:\eladmin\avatar\
