@@ -166,7 +166,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             file.createNewFile();
             bw.write(buffer.toString());
         } catch (IOException e) {
-            log.error("错误的文件位置");
+            log.error("错误的文件位置"+e);
         }
     }
 
@@ -175,19 +175,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String osName = System.getProperty("os.name");
         String strcmd = null;
         int result = 0;
-        try {
-            String path = new ClassPathResource("").getFile().getAbsolutePath();
-            if (osName.toLowerCase().contains("windows")) {
-                strcmd = "cmd /c start " + path + "\\script\\creatFile.bat d";
-            } else if (osName.toLowerCase().contains("linux")) {
-                strcmd = path + "\\script\\creatFile.sh";
-            }
-            result = runCmd(strcmd);
-            if (result == 0) {
-                return true;
-            }
-        } catch (IOException e) {
-            log.error("文件路劲不存在" + e);
+
+        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        if (osName.toLowerCase().contains("windows")) {
+            strcmd = "cmd /c start " + path + "\\script\\creatFile.bat d";
+        } else if (osName.toLowerCase().contains("linux")) {
+            strcmd = path + "\\script\\creatFile.sh";
+        }
+        result = runCmd(strcmd);
+        if (result == 0) {
+            return true;
         }
 
         return false;
@@ -218,7 +215,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (articles != null && articles.size() > 0) {
             return this.saveBatch(articles);
         }
-           return  false;
+        return false;
     }
 
     public List<Article> dloyArticle(String filePath) {
@@ -229,8 +226,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         List<Article> readerList = new ArrayList();
         if (file.isDirectory()) {
-            if(!filePath.endsWith("\\") || !filePath.endsWith("\\\\") ){
-                filePath+="\\";
+            if (!filePath.endsWith("\\") || !filePath.endsWith("\\\\")) {
+                filePath += "\\";
             }
             String[] list = file.list();
             String finalFilePath = filePath;

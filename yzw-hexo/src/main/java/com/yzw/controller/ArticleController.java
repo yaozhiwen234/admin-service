@@ -117,8 +117,8 @@ public class ArticleController {
     @ApiOperation("同步数据")
     @PostMapping("/synArticle")
     public JsonResult synArticle(@RequestParam("id") Integer id) {
+        System.out.println(properties.getPath().getFilePath());
         if (iArticleService.synArticle(id, properties.getPath().getFilePath(), suffix)) {
-            System.out.println(properties.getPath().getFilePath());
             return JsonResult.success("同步成功");
         }
         return JsonResult.error("同步失败");
