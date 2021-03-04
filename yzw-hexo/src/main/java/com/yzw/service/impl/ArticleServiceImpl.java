@@ -13,17 +13,16 @@ import com.yzw.model.DTO.ShowArticle;
 import com.yzw.service.IArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yzw.utils.BasePageResponse;
+import com.yzw.utils.SSH;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,6 +43,15 @@ import java.util.List;
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements IArticleService {
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    @Value("${userip}")
+    private String userip;
+    @Value("${name}")
+    private String username;
+    @Value("${password}")
+    private String password;
+    @Value("${execCommand}")
+    private String execCommand;
 
 
     @Override
@@ -129,18 +137,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public Boolean synArticle(Integer id, String filePath, String suffix) {
+
+
         LambdaQueryWrapper<Article> eq = Wrappers.<Article>lambdaQuery().eq(Article::getId, id);
         List<Article> list = this.list(eq);
         Article article = null;
         if (list.size() != 0) {
             article = list.get(0);
         }
-        WriteToMDFile(article, filePath, suffix);
+        try {
+            WriteToMDFile(article, filePath, suffix);
+        } catch (IOException e) {
+            log.error("同步数据异常" + e);
+            return false;
+        }
         article.setState(1);
         return this.updateById(article);
     }
 
-    public static void WriteToMDFile(Article article, String filePath, String suffix) {
+    public static void WriteToMDFile(Article article, String filePath, String suffix) throws IOException {
         StringBuffer buffer = new StringBuffer();
         buffer.append("---" + "\r\n");
         buffer.append("title: " + article.getTitle() + "\r\n");
@@ -158,33 +173,34 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         buffer.append("\r\n");
         buffer.append(article.getText());
         File file = new File(filePath, article.getTitle() + suffix);
+        file.setWritable(true, false);
+        if (file.exists()) {
+            file.delete();
+        }
+        file.createNewFile();
+
+
         try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
              BufferedWriter bw = new BufferedWriter(fw)) {
-            if (file.exists()) {
-                file.delete();
-            }
-            file.createNewFile();
+
             bw.write(buffer.toString());
         } catch (IOException e) {
-            log.error("错误的文件位置"+e);
+            log.error("错误的文件位置" + e);
         }
     }
+
 
     @Override
     public Boolean deployArticle() {
         String osName = System.getProperty("os.name");
-        String strcmd = null;
-        int result = 0;
-
-        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        String path = System.getProperty("user.dir");
         if (osName.toLowerCase().contains("windows")) {
-            strcmd = "cmd /c start " + path + "\\script\\creatFile.bat d";
+            SSH executor = new SSH(userip, username, password);
+            return executor.exec(execCommand);
         } else if (osName.toLowerCase().contains("linux")) {
-            strcmd = path + "\\script\\creatFile.sh";
-        }
-        result = runCmd(strcmd);
-        if (result == 0) {
-            return true;
+            if (runCmd("cmd /c start " + path + "\\script\\creatFile.bat d") == 0) {
+                return true;
+            }
         }
 
         return false;
@@ -196,11 +212,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         try {
             ps = rt.exec(strcmd);   //该对象的exec()方法指示Java虚拟机创建一个子进程执行指定的可执行程序，并返回与该子进程对应的Process对象实例。
             ps.waitFor();  //等待子进程完成再往下执行。
-        } catch (IOException e1) {
+        } catch (IOException | InterruptedException e1) {
             log.error("批处理命令不存在" + e1);
-        } catch (InterruptedException e) {
-
-            e.printStackTrace();
+            return 1;
         }
 
         int i = ps.exitValue();  //接收执行完毕的返回值

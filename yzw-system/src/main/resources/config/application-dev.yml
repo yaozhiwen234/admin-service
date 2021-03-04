@@ -106,7 +106,7 @@ file:
   linux:
     path: /home/eladmin/file/
     avatar: /home/eladmin/avatar/
-    filePath: /user/hexo/source/_posts
+    filePath: /user/hexo/source/_posts/
   windows:
     path: C:\eladmin\file\
     avatar: C:\eladmin\avatar\
@@ -114,3 +114,10 @@ file:
   # 文件大小 /M
   maxSize: 100
   avatarMaxSize: 5
+
+
+# 远程连接linux系统并执行 hexo相关命令的脚本
+userip: 118.25.6.5
+name: root
+password: Yzw199850
+execCommand: sh /user/adminApp/script/creatFile.sh
