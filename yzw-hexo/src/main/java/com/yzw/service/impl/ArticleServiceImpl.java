@@ -191,10 +191,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public Boolean deployArticle() {
         String osName = System.getProperty("os.name");
         String path = System.getProperty("user.dir");
-        if (osName.toLowerCase().contains("windows")) {
+        if (osName.toLowerCase().contains("linux")) {
             SSH executor = new SSH(userip, username, password);
             return executor.exec(execCommand);
-        } else if (osName.toLowerCase().contains("linux")) {
+        } else if (osName.toLowerCase().contains("windows")) {
             if (runCmd("cmd /c start " + path + "\\script\\creatFile.bat d") == 0) {
                 return true;
             }
