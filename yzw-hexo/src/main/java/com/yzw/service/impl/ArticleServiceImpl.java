@@ -178,11 +178,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             file.delete();
         }
         file.createNewFile();
-
-
         try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
              BufferedWriter bw = new BufferedWriter(fw)) {
-
             bw.write(buffer.toString());
         } catch (IOException e) {
             log.error("错误的文件位置" + e);

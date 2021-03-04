@@ -44,8 +44,6 @@ public class ArticleController {
 
     @Value("${suffix}")
     private String suffix;
-
-    //添加标题头
     @ApiOperation("添加标题头")
     @PostMapping("/addTitle")
     public JsonResult saveArticleHead(@Valid @RequestBody ArticleHead articleHead) {
@@ -62,7 +60,7 @@ public class ArticleController {
     //添加主文章
     @ApiOperation("添加文章")
     @PutMapping("/addArticle")
-    public JsonResult saveArticle( ArticleFooter articleFooter) {
+    public JsonResult saveArticle(ArticleFooter articleFooter) {
         if (CTRLS.equals(articleFooter.getOperation())) {
             iArticleService.saveArticleRedis(articleFooter);
             return JsonResult.success();
