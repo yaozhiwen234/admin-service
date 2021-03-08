@@ -45,6 +45,7 @@ public class ArticleController {
 
     @Value("${suffix}")
     private String suffix;
+
     @ApiOperation("添加标题头")
     @PostMapping("/addTitle")
     public JsonResult saveArticleHead(@Valid @RequestBody ArticleHead articleHead) {
@@ -145,7 +146,7 @@ public class ArticleController {
     public JsonResult categorieList() {
         List<Article> articles = iArticleService.categorieList();
         List<String> collect = articles.stream().map(Article::getCategories).collect(Collectors.toList());
-        return  JsonResult.success(collect);
+        return JsonResult.success(collect);
     }
 
     @ApiOperation("按照分类分组")
@@ -153,6 +154,6 @@ public class ArticleController {
     public JsonResult tagsList() {
         List<Article> articles = iArticleService.tagsList();
         List<String> collect = articles.stream().map(Article::getTags).collect(Collectors.toList());
-        return  JsonResult.success(collect);
+        return JsonResult.success(collect);
     }
 }

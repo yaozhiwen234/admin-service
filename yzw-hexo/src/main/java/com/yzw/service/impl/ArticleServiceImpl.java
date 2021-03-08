@@ -234,13 +234,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public List<Article> categorieList() {
         List<Article> list = this.list(Wrappers.<Article>lambdaQuery().groupBy(Article::getCategories).select(Article::getCategories));
-        return  list;
+        return list;
     }
 
     @Override
     public List<Article> tagsList() {
         List<Article> list = this.list(Wrappers.<Article>lambdaQuery().groupBy(Article::getTags).select(Article::getTags));
-        return  list;
+        return list;
     }
 
     public List<Article> dloyArticle(String filePath) {
@@ -277,10 +277,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     article.setTitle(readLine.split(" ")[1].trim());
                 }
                 if (readLine.startsWith("tags:")) {
-                    article.setTags(readLine = bufferedReader.readLine().trim().replace("- ",""));
+                    article.setTags(readLine = bufferedReader.readLine().trim().replace("- ", ""));
                 }
                 if (readLine.startsWith("categories:")) {
-                    article.setCategories(readLine = bufferedReader.readLine().trim().replace("- ",""));
+                    article.setCategories(readLine = bufferedReader.readLine().trim().replace("- ", ""));
                 }
                 if (readLine.startsWith("cover:")) {
                     article.setCover(readLine.split(" ")[1].trim());
