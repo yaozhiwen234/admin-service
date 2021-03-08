@@ -2,6 +2,7 @@ package com.yzw.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +14,7 @@ import com.yzw.model.DTO.ShowArticle;
 import com.yzw.service.IArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yzw.utils.BasePageResponse;
+import com.yzw.utils.JsonResult;
 import com.yzw.utils.SSH;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -229,6 +231,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return false;
     }
 
+    @Override
+    public List<Article> categorieList() {
+        List<Article> list = this.list(Wrappers.<Article>lambdaQuery().groupBy(Article::getCategories).select(Article::getCategories));
+        return  list;
+    }
+
+    @Override
+    public List<Article> tagsList() {
+        List<Article> list = this.list(Wrappers.<Article>lambdaQuery().groupBy(Article::getTags).select(Article::getTags));
+        return  list;
+    }
+
     public List<Article> dloyArticle(String filePath) {
         File file = new File(filePath);
         if (!file.canExecute()) {
@@ -263,10 +277,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     article.setTitle(readLine.split(" ")[1].trim());
                 }
                 if (readLine.startsWith("tags:")) {
-                    article.setTags(readLine = bufferedReader.readLine().trim());
+                    article.setTags(readLine = bufferedReader.readLine().trim().replace("- ",""));
                 }
                 if (readLine.startsWith("categories:")) {
-                    article.setCategories(readLine = bufferedReader.readLine().trim());
+                    article.setCategories(readLine = bufferedReader.readLine().trim().replace("- ",""));
                 }
                 if (readLine.startsWith("cover:")) {
                     article.setCover(readLine.split(" ")[1].trim());

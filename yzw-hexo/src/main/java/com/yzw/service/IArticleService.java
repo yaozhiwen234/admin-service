@@ -6,6 +6,7 @@ import com.yzw.model.DTO.ArticleFooter;
 import com.yzw.model.DTO.ArticleHead;
 import com.yzw.model.DTO.ShowArticle;
 import com.yzw.utils.BasePageResponse;
+import com.yzw.utils.JsonResult;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -39,5 +40,10 @@ public interface IArticleService extends IService<Article> {
     Boolean deployArticle();
 
     Boolean fileToDB(String filePath);
+
+
+    List<Article> categorieList();
+
+    List<Article>  tagsList();
 
 }

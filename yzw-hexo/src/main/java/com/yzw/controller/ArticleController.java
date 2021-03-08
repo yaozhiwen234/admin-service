@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -139,4 +140,19 @@ public class ArticleController {
         return JsonResult.error("文件入库失败");
     }
 
+    @ApiOperation("按照分类分组")
+    @GetMapping("/showCategorie")
+    public JsonResult categorieList() {
+        List<Article> articles = iArticleService.categorieList();
+        List<String> collect = articles.stream().map(Article::getCategories).collect(Collectors.toList());
+        return  JsonResult.success(collect);
+    }
+
+    @ApiOperation("按照分类分组")
+    @GetMapping("/showTags")
+    public JsonResult tagsList() {
+        List<Article> articles = iArticleService.tagsList();
+        List<String> collect = articles.stream().map(Article::getTags).collect(Collectors.toList());
+        return  JsonResult.success(collect);
+    }
 }
