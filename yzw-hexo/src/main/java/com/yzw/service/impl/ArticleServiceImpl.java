@@ -290,7 +290,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 }
                 if (readLine.equals("---")) {
                     while ((readLine = bufferedReader.readLine()) != null) {
-
                         buffer.append(readLine + "\r\n");
                     }
                 }
@@ -299,11 +298,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             article.setText(buffer.toString());
             article.setState(0);
             article.setCreateTime(LocalDateTime.now());
-
         } catch (IOException e) {
             log.error(filePath + " 文件路径不存在或文件不存在");
         }
         return article;
     }
-
 }
