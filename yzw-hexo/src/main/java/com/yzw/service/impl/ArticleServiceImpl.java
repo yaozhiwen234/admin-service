@@ -277,10 +277,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     article.setTitle(readLine.split(" ")[1].trim());
                 }
                 if (readLine.startsWith("tags:")) {
-                    article.setTags(readLine = bufferedReader.readLine().trim().replace("- ", ""));
+                    article.setTags(readLine = bufferedReader.readLine().replace("- ", "").trim());
                 }
                 if (readLine.startsWith("categories:")) {
-                    article.setCategories(readLine = bufferedReader.readLine().trim().replace("- ", ""));
+                    article.setCategories(readLine = bufferedReader.readLine().replace("- ", "").trim());
                 }
                 if (readLine.startsWith("cover:")) {
                     article.setCover(readLine.split(" ")[1].trim());
