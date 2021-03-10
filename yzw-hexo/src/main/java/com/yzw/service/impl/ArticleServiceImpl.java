@@ -297,6 +297,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             article.setText(buffer.toString());
             article.setState(0);
+
+            log.info("LocalDateTime.now():  " + LocalDateTime.now());
+
             article.setCreateTime(LocalDateTime.now());
         } catch (IOException e) {
             log.error(filePath + " 文件路径不存在或文件不存在");
