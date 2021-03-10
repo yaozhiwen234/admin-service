@@ -251,8 +251,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         List<Article> readerList = new ArrayList();
         if (file.isDirectory()) {
-            if (!filePath.endsWith("\\") || !filePath.endsWith("\\\\")) {
-                filePath += "\\";
+            if (!filePath.endsWith("/") || !filePath.endsWith("\\")) {
+                filePath += "/";
             }
             String[] list = file.list();
             String finalFilePath = filePath;
