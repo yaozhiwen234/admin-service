@@ -298,7 +298,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             article.setText(buffer.toString());
             article.setState(0);
 
-            log.info("LocalDateTime.now():  " + LocalDateTime.now());
+            log.info("LocalDateTime.now():查看当前时间：" + LocalDateTime.now());
 
             article.setCreateTime(LocalDateTime.now());
         } catch (IOException e) {
