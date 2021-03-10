@@ -294,7 +294,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         buffer.append(readLine + "\r\n");
                     }
                 }
-
             }
             article.setText(buffer.toString());
             article.setState(0);
