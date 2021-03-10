@@ -23,7 +23,7 @@ spring:
 
   redis:
     #数据库索引
-    host: 118.25.6.5
+    host: 172.18.0.3
     port: 6379
     password:
     #连接超时时间
