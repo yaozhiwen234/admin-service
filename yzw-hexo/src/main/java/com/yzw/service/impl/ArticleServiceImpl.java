@@ -170,7 +170,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             buffer.append("  - " + str + "\r\n");
         }
         buffer.append("cover: " + article.getCover() + "\r\n");
-        buffer.append("date: " + article.getDate().toString().replace("T", " ") + "\r\n");
+        String sate =  article.getDate().toString().split(":").length<3?article.getDate().toString()+":00":article.getDate().toString();
+        buffer.append("date: " + sate.replace("T", " ") + "\r\n");
         buffer.append("---" + "\r\n");
         buffer.append("\r\n");
         buffer.append(article.getText());
@@ -225,7 +226,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Boolean fileToDB(String filePath) {
         List<Article> articles = dloyArticle(filePath);
-        log.error("articles: " +articles);
         if (articles != null && articles.size() > 0) {
             return this.saveBatch(articles);
         }
@@ -287,7 +287,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     article.setCover(readLine.split(" ")[1].trim());
                 }
                 if (readLine.startsWith("date:")) {
-                    article.setDate(LocalDateTime.parse(readLine.trim().split(" ")[0] + " " + readLine.trim().split(" ")[1], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                    article.setDate(LocalDateTime.parse(readLine.trim().split(" ")[1] + " " + readLine.trim().split(" ")[2], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 }
                 if (readLine.equals("---")) {
                     while ((readLine = bufferedReader.readLine()) != null) {
@@ -298,9 +298,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             article.setText(buffer.toString());
             article.setState(0);
-
-            log.info("LocalDateTime.now():查看当前时间：" + LocalDateTime.now());
-
             article.setCreateTime(LocalDateTime.now());
         } catch (IOException e) {
             log.error(filePath + " 文件路径不存在或文件不存在");
