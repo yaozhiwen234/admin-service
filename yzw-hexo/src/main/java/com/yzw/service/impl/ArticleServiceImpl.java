@@ -287,7 +287,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     article.setCover(readLine.split(" ")[1].trim());
                 }
                 if (readLine.startsWith("date:")) {
-                    article.setDate(LocalDateTime.parse(readLine.split(" ")[1] + " " + readLine.split(" ")[2], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                    article.setDate(LocalDateTime.parse(readLine.split(" ")[0] + " " + readLine.split(" ")[1], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 }
                 if (readLine.equals("---")) {
                     while ((readLine = bufferedReader.readLine()) != null) {
