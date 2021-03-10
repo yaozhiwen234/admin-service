@@ -225,6 +225,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Boolean fileToDB(String filePath) {
         List<Article> articles = dloyArticle(filePath);
+        log.error("articles: " +articles);
         if (articles != null && articles.size() > 0) {
             return this.saveBatch(articles);
         }
