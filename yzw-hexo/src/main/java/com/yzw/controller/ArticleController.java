@@ -62,7 +62,7 @@ public class ArticleController {
     //添加主文章
     @ApiOperation("添加文章")
     @PutMapping("/addArticle")
-    public JsonResult saveArticle(ArticleFooter articleFooter) {
+    public JsonResult saveArticle(@RequestBody ArticleFooter articleFooter) {
         if (CTRLS.equals(articleFooter.getOperation())) {
             iArticleService.saveArticleRedis(articleFooter);
             return JsonResult.success();
