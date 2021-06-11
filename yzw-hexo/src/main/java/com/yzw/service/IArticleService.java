@@ -21,6 +21,8 @@ import java.util.List;
  */
 public interface IArticleService extends IService<Article> {
 
+    JsonResult selectText(Integer id, String title);
+
     Boolean saveArticleHead(ArticleHead articleHead);
 
     Boolean saveArticle(ArticleFooter articleFooter);
@@ -44,6 +46,6 @@ public interface IArticleService extends IService<Article> {
 
     List<Article> categorieList();
 
-    List<Article>  tagsList();
+    List<Article> tagsList();
 
 }

@@ -1,7 +1,9 @@
 package com.yzw.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yzw.config.FileProperties;
 import com.yzw.entity.Article;
+import com.yzw.entity.LogText;
 import com.yzw.model.DTO.ArticleFooter;
 import com.yzw.model.DTO.ArticleHead;
 import com.yzw.model.DTO.ShowArticle;
@@ -12,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,10 +79,18 @@ public class ArticleController {
     }
 
     //添加主文章
-    @ApiOperation("展示文章")
+    @ApiOperation("展示列表")
     @GetMapping("/showArticle")
     public JsonResult selectArticle(ShowArticle showArticle) {
         return JsonResult.success(iArticleService.selectArticle(showArticle));
+    }
+
+
+    //添加主文章
+    @ApiOperation("查询文章")
+    @GetMapping("/showTest")
+    public JsonResult selectText(Integer id, String title) {
+        return JsonResult.success(iArticleService.selectText(id, title));
     }
 
     //防止标题重复

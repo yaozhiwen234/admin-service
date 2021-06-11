@@ -17,6 +17,7 @@ import com.yzw.service.IArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yzw.service.ILogTextService;
 import com.yzw.utils.BasePageResponse;
+import com.yzw.utils.JsonResult;
 import com.yzw.utils.SSH;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     @Override
+    public JsonResult selectText(Integer id, String title) {
+        String text = stringRedisTemplate.opsForValue().get(id + title);
+        LogText logText = new LogText();
+        if (!StringUtils.isEmpty(text)) {
+            logText.setText(text);
+        } else {
+            LogText logText1 = logTextService.list(new QueryWrapper<LogText>().lambda().eq(LogText::getArticleId, id)).stream().findFirst().orElse(null);
+            logText.setText(logText1.getText());
+
+        }
+        return JsonResult.success(logText);
+    }
+
+    @Override
     public Boolean saveArticleHead(ArticleHead articleHead) {
         ModelMapper mapper = new ModelMapper();
         Article article = mapper.map(articleHead, Article.class);
@@ -80,8 +95,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Article article = mapper.map(articleFooter, Article.class);
         article.setCreateTime(LocalDateTime.now());
         article.setState(0);
-        logTextService.update(new UpdateWrapper<LogText>().lambda().eq(LogText::getArticleId, articleFooter.getId()).set(LogText::getText, articleFooter.getText()).set(LogText::getCreateTime, LocalDateTime.now()));
-        if (this.updateById(article)) {
+        LogText logText = new LogText();
+        logText.setText(article.getText());
+        logText.setId(null);
+        logText.setCreateTime(LocalDateTime.now());
+        logText.setArticleId(article.getId());
+        if (this.updateById(article) && logTextService.save(logText)) {
             stringRedisTemplate.delete(articleFooter.getId() + articleFooter.getTitle());
             return true;
         }
@@ -107,18 +126,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .between(!b, Article::getDate, showArticle.getStartTime(), showArticle.getEndTime())
                 .orderByDesc(Article::getDate);
         page = this.page(page, wrapper);
-        List<Article> articles = page.getRecords();
-        List<Integer> collect = articles.stream().map(Article::getId).collect(Collectors.toList());
-        List<LogText> list = logTextService.list(new QueryWrapper<LogText>().lambda().in(LogText::getArticleId, collect));
-        articles.forEach(m -> {
-            LogText logText = list.stream().filter(v -> v.getArticleId().equals(m.getId())).findFirst().orElse(null);
-            String text = stringRedisTemplate.opsForValue().get(m.getId() + m.getTitle());
-            if (!StringUtils.isEmpty(text)) {
-                m.setText(text);
-            } else {
-                m.setText(logText.getText());
-            }
-        });
         BasePageResponse<Article> pageResponse = new BasePageResponse<>();
         pageResponse.setPages(page.getPages());
         pageResponse.setCurrent(page.getCurrent());
