@@ -53,7 +53,7 @@ public class Article extends Model<Article> {
      */
     private String cover;
 
-    /**
+    /*  *
      * 文本
      */
     private String text;

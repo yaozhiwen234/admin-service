@@ -49,7 +49,7 @@ public class MybatisPlusGenerator {
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("yzw199850");
-        dsc.setUrl("jdbc:log4jdbc:mysql://192.168.1.120:3306/hexo?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false");
+        dsc.setUrl("jdbc:log4jdbc:mysql://118.25.6.5:3306/hexo?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false");
         mpg.setDataSource(dsc);
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
@@ -57,7 +57,7 @@ public class MybatisPlusGenerator {
         strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
 
         // 需要生成的表
-        strategy.setInclude(new String[]{"article"});
+        strategy.setInclude(new String[]{"log_text"});
 //
 //        strategy.setInclude(new String[]{"bank_deduction_record"});
 

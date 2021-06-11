@@ -109,7 +109,6 @@ public class ArticleController {
         if (iArticleService.deleteArticle(id)) {
             return JsonResult.success("删除成功");
         }
-
         return JsonResult.error("删除失败");
 
     }

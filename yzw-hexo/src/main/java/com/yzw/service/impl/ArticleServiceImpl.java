@@ -3,25 +3,29 @@ package com.yzw.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yzw.entity.Article;
+import com.yzw.entity.LogText;
 import com.yzw.mapper.ArticleMapper;
 import com.yzw.model.DTO.ArticleFooter;
 import com.yzw.model.DTO.ArticleHead;
 import com.yzw.model.DTO.ShowArticle;
 import com.yzw.service.IArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yzw.service.ILogTextService;
 import com.yzw.utils.BasePageResponse;
-import com.yzw.utils.JsonResult;
 import com.yzw.utils.SSH;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
@@ -30,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -45,6 +50,8 @@ import java.util.List;
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements IArticleService {
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    private final ILogTextService logTextService;
 
     @Value("${userip}")
     private String userip;
@@ -67,11 +74,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean saveArticle(ArticleFooter articleFooter) {
         ModelMapper mapper = new ModelMapper();
         Article article = mapper.map(articleFooter, Article.class);
         article.setCreateTime(LocalDateTime.now());
         article.setState(0);
+        logTextService.update(new UpdateWrapper<LogText>().lambda().eq(LogText::getArticleId, articleFooter.getId()).set(LogText::getText, articleFooter.getText()).set(LogText::getCreateTime, LocalDateTime.now()));
         if (this.updateById(article)) {
             stringRedisTemplate.delete(articleFooter.getId() + articleFooter.getTitle());
             return true;
@@ -98,10 +107,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .between(!b, Article::getDate, showArticle.getStartTime(), showArticle.getEndTime())
                 .orderByDesc(Article::getDate);
         page = this.page(page, wrapper);
-        page.getRecords().forEach(m -> {
+        List<Article> articles = page.getRecords();
+        List<Integer> collect = articles.stream().map(Article::getId).collect(Collectors.toList());
+        List<LogText> list = logTextService.list(new QueryWrapper<LogText>().lambda().in(LogText::getArticleId, collect));
+        articles.forEach(m -> {
+            LogText logText = list.stream().filter(v -> v.getArticleId().equals(m.getId())).findFirst().orElse(null);
             String text = stringRedisTemplate.opsForValue().get(m.getId() + m.getTitle());
             if (!StringUtils.isEmpty(text)) {
                 m.setText(text);
+            } else {
+                m.setText(logText.getText());
             }
         });
         BasePageResponse<Article> pageResponse = new BasePageResponse<>();
@@ -131,22 +146,24 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteArticle(Integer[] id) {
         List<Integer> list = Arrays.asList(id);
-        return this.removeByIds(list);
-
+        logTextService.remove(new QueryWrapper<LogText>().lambda().in(LogText::getArticleId, list));
+        this.removeByIds(list);
+        return true;
     }
 
     @Override
     public Boolean synArticle(Integer id, String filePath, String suffix) {
-
-
         LambdaQueryWrapper<Article> eq = Wrappers.<Article>lambdaQuery().eq(Article::getId, id);
         List<Article> list = this.list(eq);
-        Article article = null;
-        if (list.size() != 0) {
-            article = list.get(0);
+        List<LogText> logTexts = logTextService.list(new QueryWrapper<LogText>().lambda().eq(LogText::getArticleId, id));
+        if (list.size() == 0 || logTexts.size() == 0) {
+            return false;
         }
+        Article article = list.get(0);
+        article.setText(list.get(0).getText());
         try {
             WriteToMDFile(article, filePath, suffix);
         } catch (IOException e) {
@@ -170,7 +187,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             buffer.append("  - " + str + "\r\n");
         }
         buffer.append("cover: " + article.getCover() + "\r\n");
-        String sate =  article.getDate().toString().split(":").length<3?article.getDate().toString()+":00":article.getDate().toString();
+        String sate = article.getDate().toString().split(":").length < 3 ? article.getDate().toString() + ":00" : article.getDate().toString();
         buffer.append("date: " + sate.replace("T", " ") + "\r\n");
         buffer.append("---" + "\r\n");
         buffer.append("\r\n");
@@ -223,13 +240,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean fileToDB(String filePath) {
         List<Article> articles = dloyArticle(filePath);
+        ArrayList<LogText> logTexts = new ArrayList<>();
         if (articles != null && articles.size() > 0) {
-            return this.saveBatch(articles);
+            articles.forEach(v -> {
+                LogText logText = new LogText();
+                logText.setText(v.getText());
+                logText.setArticleId(v.getId());
+                logText.setCreateTime(LocalDateTime.now());
+            });
+            return this.saveBatch(articles) && logTextService.saveBatch(logTexts);
         }
         return false;
     }
+
 
     @Override
     public List<Article> categorieList() {
