@@ -263,12 +263,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return false;
     }
 
-
     @Override
     public List<Article> categorieList() {
-        List<Article> list = this.list(Wrappers.<Article>lambdaQuery().groupBy(Article::getCategories).select(Article::getCategories));
+        List<Article> list =  this.list(new QueryWrapper<Article>().lambda().groupBy(Article::getCategories).select(Article::getCategories));
         return list;
     }
+
 
     @Override
     public List<Article> tagsList() {

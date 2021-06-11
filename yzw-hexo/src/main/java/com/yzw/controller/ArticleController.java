@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -155,11 +156,11 @@ public class ArticleController {
     @GetMapping("/showCategorie")
     public JsonResult categorieList() {
         List<Article> articles = iArticleService.categorieList();
-        List<String> collect = articles.stream().map(Article::getCategories).collect(Collectors.toList());
-        return JsonResult.success(collect);
+        Stream<String> stringStream = articles.stream().map(Article::getCategories);
+        return JsonResult.success(stringStream);
     }
 
-    @ApiOperation("按照分类分组")
+    @ApiOperation("按照标签分组")
     @GetMapping("/showTags")
     public JsonResult tagsList() {
         List<Article> articles = iArticleService.tagsList();
