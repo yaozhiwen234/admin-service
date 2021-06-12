@@ -72,8 +72,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             logText.setText(text);
         } else {
             LogText logText1 = logTextService.list(new QueryWrapper<LogText>().lambda().eq(LogText::getArticleId, id)).stream().findFirst().orElse(null);
-            logText.setText(logText1.getText());
-
+            if (logText1 == null) {
+                logText.setText(null);
+            } else {
+                logText.setText(logText1.getText());
+            }
         }
         return JsonResult.success(logText);
     }
@@ -100,7 +103,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         logText.setId(null);
         logText.setCreateTime(LocalDateTime.now());
         logText.setArticleId(article.getId());
-        if (this.updateById(article) && logTextService.save(logText)) {
+        logTextService.remove(Wrappers.<LogText>lambdaQuery().eq(LogText::getArticleId,article.getId()));
+        if (this.updateById(article) &&  logTextService.save(logText)) {
             stringRedisTemplate.delete(articleFooter.getId() + articleFooter.getTitle());
             return true;
         }
@@ -265,14 +269,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public List<Article> categorieList() {
-        List<Article> list =  this.list(new QueryWrapper<Article>().lambda().groupBy(Article::getCategories).select(Article::getCategories));
+        List<Article> list = this.list(Wrappers.<Article>lambdaQuery().isNotNull(Article::getCategories).groupBy(Article::getCategories).select(Article::getCategories));
         return list;
     }
 
 
     @Override
     public List<Article> tagsList() {
-        List<Article> list = this.list(Wrappers.<Article>lambdaQuery().groupBy(Article::getTags).select(Article::getTags));
+        List<Article> list = this.list(Wrappers.<Article>lambdaQuery().isNotNull(Article::getTags).groupBy(Article::getTags).select(Article::getTags));
         return list;
     }
 

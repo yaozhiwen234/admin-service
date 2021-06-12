@@ -156,14 +156,15 @@ public class ArticleController {
     @GetMapping("/showCategorie")
     public JsonResult categorieList() {
         List<Article> articles = iArticleService.categorieList();
-        Stream<String> stringStream = articles.stream().map(Article::getCategories);
-        return JsonResult.success(stringStream);
+        List<String> collect = articles.stream().map(Article::getCategories).collect(Collectors.toList());
+        return JsonResult.success(collect);
     }
 
     @ApiOperation("按照标签分组")
     @GetMapping("/showTags")
     public JsonResult tagsList() {
         List<Article> articles = iArticleService.tagsList();
+
         List<String> collect = articles.stream().map(Article::getTags).collect(Collectors.toList());
         return JsonResult.success(collect);
     }
