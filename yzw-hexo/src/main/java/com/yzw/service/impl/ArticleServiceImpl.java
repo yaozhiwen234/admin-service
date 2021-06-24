@@ -170,7 +170,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return false;
         }
         Article article = list.get(0);
-        article.setText(list.get(0).getText());
+        article.setText(logTexts.get(0).getText());
         try {
             WriteToMDFile(article, filePath, suffix);
         } catch (IOException e) {
