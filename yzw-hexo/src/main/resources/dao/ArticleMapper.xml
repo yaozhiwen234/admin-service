@@ -10,7 +10,6 @@
         <result column="tags" property="tags" />
         <result column="categories" property="categories" />
         <result column="cover" property="cover" />
-        <result column="text" property="text" />
         <result column="createTime" property="createTime" />
         <result column="updateTime" property="updateTime" />
     </resultMap>
