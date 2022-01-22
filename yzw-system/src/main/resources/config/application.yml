@@ -23,7 +23,7 @@ spring:
 
   redis:
     #数据库索引
-    host: 150.158.58.26
+    host: yaozhiwen.top
     port: 6379
     password:
     #连接超时时间
