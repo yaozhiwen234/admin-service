@@ -4,7 +4,7 @@ spring:
     druid:
       db-type: com.alibaba.druid.pool.DruidDataSource
       driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-      url: jdbc:log4jdbc:mysql://118.25.6.5:3306/hexo?serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8&useSSL=false
+      url: jdbc:log4jdbc:mysql://yaozhiwen.top:3306/hexo?serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8&useSSL=false
       username: root
       password: yzw199850
       # 初始连接数
@@ -125,7 +125,7 @@ file:
   avatarMaxSize: 5
 
   # 远程连接linux系统并执行 hexo相关命令的脚本
-  userip: 118.25.6.5
+  userip: yaozhiwen.top
   username: root
   password: Yzw199850
   execCommand: sh /user/adminApp/script/creatFile.sh
